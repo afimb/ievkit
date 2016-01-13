@@ -3,21 +3,30 @@ module Ievkit
     attr_reader :client, :response
 
     def initialize(referential_id)
-      #RestClient.log = @logger = Logger.new(STDERR)
       @client = Ievkit::Client.new(referential_id)
     end
 
-    def execute(action, type=nil, options={})
-      @response = send(action, type, options)
-      parse_response
+    def post_job(action, type = nil, options = {})
+      send(action, type, options)
     end
 
-    def check_job(url)
-      @response = @client.prepare_get_request(url)
-      parse_response
+    def get_job(url)
+      do_job(url, :get)
+    end
+
+    def delete_job(url)
+      do_job(url, :delete)
+    end
+
+    def delete_jobs
+      do_job(@client.iev_url_jobs, :delete)
     end
 
     protected
+
+    def do_job(url, http_method)
+      @client.prepare_request(url, http_method)
+    end
 
     def importer(type, options)
       @client.prepare_post_request(type, options)
@@ -29,20 +38,6 @@ module Ievkit
 
     def validator(type, options)
       @client.prepare_post_request(type, options)
-    end
-
-    def parse_response
-      case @response.status
-        when 202
-          @response.headers['location']
-        when 303
-          @response.headers['location']
-        when 200
-          links = @response.headers['link'].split(',')
-          @client.parse_links_headers(links)
-        else
-          @response.body
-      end
     end
   end
 end

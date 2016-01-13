@@ -1,5 +1,5 @@
-#require 'logger'
-#require 'rest-client'
+# require 'logger'
+# require 'rest-client'
 require 'figaro'
 require 'faraday_middleware'
 require 'ievkit/version'

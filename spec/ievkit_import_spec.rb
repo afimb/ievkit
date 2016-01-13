@@ -1,21 +1,20 @@
 require 'spec_helper'
 
 describe Ievkit do
-
-  before(:all) { @referential = 't04' }
+  before(:all) { @referential = ENV['REFERENTIAL_TEST'] }
   before(:all) { @job = Ievkit::Job.new(@referential) }
 
   context '#import' do
-    before(:all) { @import_forwarding_url = @job.execute(:importer, :gtfs, { iev_file: ENV['iev_import_file'], iev_params: ENV['iev_import_params'] }) }
+    before(:all) { @import_forwarding_url = @job.post_job(:importer, :gtfs, iev_file: ENV['IEV_IMPORT_FILE_TEST'], iev_params: ENV['IEV_IMPORT_PARAMS_TEST']) }
     it 'return correct url suffix' do
-      expect(@job.client.iev_url_suffix).to end_with("referentials/#{@referential}/importer/gtfs")
+      expect("#{@job.client.iev_url_prefix}#{@job.client.iev_url_suffix}").to end_with("referentials/#{@referential}/importer/gtfs")
     end
     it 'return forwarding url' do
       expect(@import_forwarding_url).to match('/scheduled_jobs/')
     end
 
     context 'when check forwarding url' do
-      before(:all) { @links = @job.check_job(@import_forwarding_url) }
+      before(:all) { @links = @job.get_job(@import_forwarding_url) }
       it 'return parameters link' do
         expect(@links[:parameters]).to end_with('/parameters.json')
       end
@@ -33,16 +32,16 @@ describe Ievkit do
       end
       it 'forward to terminated_jobs' do
         terminated_job_url = nil
-        until terminated_job_url =~ /terminated_jobs/ do
-          terminated_job_url = @job.check_job(@import_forwarding_url)
+        until terminated_job_url =~ /terminated_jobs/
+          terminated_job_url = @job.get_job(@import_forwarding_url)
           sleep(2)
         end
       end
     end
 
     context 'when check terminated job' do
-      before(:all) { @terminated_job_url = @job.check_job(@import_forwarding_url) }
-      before(:all) { @links = @job.check_job(@terminated_job_url) }
+      before(:all) { @terminated_job_url = @job.get_job(@import_forwarding_url) }
+      before(:all) { @links = @job.get_job(@terminated_job_url) }
       it 'return parameters link' do
         expect(@links[:parameters]).to end_with('/parameters.json')
       end
@@ -60,6 +59,15 @@ describe Ievkit do
       end
       it 'return validation_report link' do
         expect(@links[:validation_report]).to end_with('/validation_report.json')
+      end
+      it 'return true on delete' do
+        expect(@job.delete_job(@links[:delete])).to be true
+      end
+      it 'raise an error on already deleted' do
+        expect(@job.delete_job(@links[:delete])).to eq('UNKNOWN_JOB')
+      end
+      it 'return true on deleted all jobs' do
+        expect(@job.delete_jobs).to be true
       end
     end
   end
