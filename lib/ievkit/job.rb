@@ -22,6 +22,11 @@ module Ievkit
       do_job(@client.iev_url_jobs, :delete)
     end
 
+    def terminated_job?(url)
+      response = get_job(url)
+      response.to_s['/terminated_jobs/']
+    end
+
     protected
 
     def do_job(url, http_method)

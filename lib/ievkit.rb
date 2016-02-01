@@ -1,12 +1,18 @@
-# require 'logger'
-# require 'rest-client'
 require 'figaro'
 require 'faraday_middleware'
 require 'ievkit/version'
 require 'ievkit/job'
 require 'ievkit/client'
+require 'ievkit/railtie' if defined?(Rails)
 
 module Ievkit
+  class Log
+    class << self
+      attr_accessor :logger
+    end
+    self.logger = Logger.new(STDOUT)
+  end
+
   Figaro.application = Figaro::Application.new(path: 'config/application.yml')
   Figaro.application.load
 end

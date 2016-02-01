@@ -13,14 +13,24 @@ module Ievkit
       init_files(options)
       @iev_url_suffix = init_iev_url_suffix(type)
       init_connection(iev_url_prefix)
-      response = @connection.post(@iev_url_suffix, @payload)
-      parse_response(response)
+      begin
+        response = @connection.post(@iev_url_suffix, @payload)
+        parse_response(response)
+      rescue => e
+        Ievkit::Log.logger.fatal("Unable to contact IEV server: #{e.message}")
+        return false
+      end
     end
 
     def prepare_request(url, http_method)
       init_connection(url)
-      response = @connection.send(http_method)
-      parse_response(response)
+      begin
+        response = @connection.send(http_method)
+        parse_response(response)
+      rescue => e
+        Ievkit::Log.logger.fatal("Unable to contact IEV server: #{e.message}")
+        return false
+      end
     end
 
     def init_connection(url)
@@ -48,7 +58,7 @@ module Ievkit
     end
 
     def parse_links_headers(response)
-      return true unless response.headers['link'].present?
+      return response.body unless response.headers['link'].present?
       {}.tap do |hash|
         response.headers['link'].split(',').each do |part|
           section = part.split(';')
@@ -66,11 +76,14 @@ module Ievkit
         response.headers['location']
       when 200
         parse_links_headers(response)
+      when 404
+        raise 'IEV not accessible'
       else
-        JSON.parse(response.body)['error_code']
+        response.body
       end
     rescue => e
-      @logger.fatal("Unable to parse response: #{e}")
+      Ievkit::Log.logger.fatal("Unable to parse response: #{e.message}")
+      return false
     end
 
     private
