@@ -23,8 +23,7 @@ module Ievkit
     end
 
     def terminated_job?(url)
-      response = get_job(url)
-      response.to_s['/terminated_jobs/']
+      get_job(url).to_s.include?('terminated_jobs')
     end
 
     protected
