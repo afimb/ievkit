@@ -36,5 +36,5 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/[USERN
 
 ## License
 
-This project is licensed under the CeCILL-B license, a copy of which can be found in the LICENSE file.
+This project is licensed under the CeCILL-B license, a copy of which can be found in the [LICENSE](./LICENSE.md) file.
 
