@@ -40,6 +40,10 @@ module Ievkit
       @client.prepare_post_request(type, options)
     end
 
+    def converter(type, options)
+      @client.prepare_post_request(type, options)
+    end
+
     def validator(type, options)
       @client.prepare_post_request(type, options)
     end
