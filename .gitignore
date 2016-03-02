@@ -7,6 +7,7 @@
 /spec/reports/
 /tmp/
 .idea
+*.gem
 
 # Ignore application configuration
 /config/application.yml
