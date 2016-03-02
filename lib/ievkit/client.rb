@@ -58,7 +58,7 @@ module Ievkit
     end
 
     def parse_links_headers(response)
-      return response.body unless response.headers['link'].present?
+      return response.body if response.headers['link'].to_s.empty?
       {}.tap do |hash|
         response.headers['link'].split(',').each do |part|
           section = part.split(';')

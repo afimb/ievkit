@@ -1,5 +1,6 @@
 require 'figaro'
 require 'faraday_middleware'
+require 'logger'
 require 'ievkit/version'
 require 'ievkit/job'
 require 'ievkit/client'

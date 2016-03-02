@@ -1,5 +1,6 @@
 # Ievkit
 
+[![Code Climate](https://codeclimate.com/github/afimb/ievkit/badges/gpa.svg)](https://codeclimate.com/github/afimb/ievkit)
 
 ## Installation
 
