@@ -45,9 +45,6 @@ describe Ievkit do
       it 'return action_params link' do
         expect(@links[:action_params]).to end_with('/action_parameters.json')
       end
-      it 'return data link' do
-        expect(@links[:data]).to be
-      end
       it 'return action_report link' do
         expect(@links[:action_report]).to end_with('/action_report.json')
       end

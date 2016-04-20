@@ -79,7 +79,7 @@ module Ievkit
       when 200
         parse_links_headers(response)
       when 404
-        raise 'IEV not accessible'
+        raise 'Not Found'
       else
         response.body
       end

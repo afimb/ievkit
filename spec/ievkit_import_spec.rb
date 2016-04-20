@@ -61,13 +61,13 @@ describe Ievkit do
         expect(@links[:validation_report]).to end_with('/validation_report.json')
       end
       it 'return true on delete' do
-        expect(@job.delete_job(@links[:delete])).to be true
+        expect(@job.delete_job(@links[:delete])).to be_truthy
       end
       it 'raise an error on already deleted' do
-        expect(@job.delete_job(@links[:delete])).to eq('UNKNOWN_JOB')
+        expect(@job.delete_job(@links[:delete])).to be_falsey
       end
       it 'return true on deleted all jobs' do
-        expect(@job.delete_jobs).to be true
+        expect(@job.delete_jobs).to be_truthy
       end
     end
   end
