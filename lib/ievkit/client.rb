@@ -44,9 +44,11 @@ module Ievkit
 
     def init_files(options)
       return unless options
+      if options[:iev_params].present? && File.file?(options[:iev_params])
+        @payload[:file[0]] = Faraday::UploadIO.new(options[:iev_params], 'application/json', 'parameters.json')
+      end
       iev_file = options[:iev_file]
-      @payload[:file[0]] = Faraday::UploadIO.new(options[:iev_params], 'application/json', 'parameters.json')
-      return unless iev_file
+      return if iev_file.blank? || !File.file?(iev_file)
       filename = File.basename(iev_file)
       @payload[:file[1]] = Faraday::UploadIO.new(iev_file, 'application/zip', filename)
     end
