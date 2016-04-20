@@ -1,6 +1,7 @@
 # Ievkit
 
 [![Code Climate](https://codeclimate.com/github/afimb/ievkit/badges/gpa.svg)](https://codeclimate.com/github/afimb/ievkit)
+[![Dependency Status](https://gemnasium.com/afimb/ievkit.svg)](https://gemnasium.com/afimb/ievkit)
 [![Gem Version](https://badge.fury.io/rb/ievkit.svg)](https://badge.fury.io/rb/ievkit)
 
 ## Installation
