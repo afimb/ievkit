@@ -1,7 +1,9 @@
 require 'figaro'
 require 'faraday_middleware'
+require 'redis'
 require 'logger'
 require 'ievkit/version'
+require 'ievkit/cache'
 require 'ievkit/job'
 require 'ievkit/client'
 require 'ievkit/railtie' if defined?(Rails)
