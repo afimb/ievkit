@@ -1,12 +1,13 @@
 module Ievkit
   class Client
-    attr_reader :iev_url_prefix, :iev_url_suffix, :iev_url_jobs, :referential
+    attr_reader :iev_url_prefix, :iev_url_suffix, :iev_url_jobs, :referential, :redis
 
     def initialize(referential)
       @payload = {}
       @referential = referential
       @iev_url_prefix = init_iev_url_prefix
       @iev_url_jobs = init_iev_url_jobs
+      @redis = Redis.new
     end
 
     def prepare_post_request(type, options)
@@ -23,10 +24,27 @@ module Ievkit
     end
 
     def prepare_request(url, http_method)
+      cache_key = [url, http_method.to_s].join('_')
+      begin
+        response_cached = @redis.cache(cache_key)
+        return response_cached if response_cached
+      rescue => e
+        Ievkit::Log.logger.fatal("Unable to contact Redis server: #{e.message}")
+      end
       init_connection(url)
       begin
         response = @connection.send(http_method)
-        parse_response(response)
+        cache_control = response.headers['cache-control']
+        max_age = 0
+        no_cache = true
+        if cache_control
+          max_age = cache_control[/max-age=(.*)/, 1].to_i
+          no_cache = false if max_age > 0 && cache_control[/no-transform/]
+        end
+        return parse_response(response) if no_cache
+        @redis.cache(cache_key, max_age) {
+          parse_response(response)
+        }
       rescue => e
         Ievkit::Log.logger.fatal("Unable to contact IEV server: #{e.message}")
         return false
