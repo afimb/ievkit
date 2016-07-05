@@ -38,8 +38,8 @@ module Ievkit
         max_age = 0
         no_cache = true
         if cache_control
-          max_age = cache_control[/max-age=(.*)/, 1]
-          no_cache = false if max_age && cache_control[/no-transform/]
+          max_age = cache_control[/max-age=(.*)/, 1].to_i
+          no_cache = false if max_age > 0 && cache_control[/no-transform/]
         end
         return parse_response(response) if no_cache
         @redis.cache(cache_key, max_age) {
