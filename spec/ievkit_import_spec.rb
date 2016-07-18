@@ -4,6 +4,13 @@ describe Ievkit do
   before(:all) { @referential = ENV['REFERENTIAL_TEST'] }
   before(:all) { @job = Ievkit::Job.new(@referential) }
 
+  context '#import_errors' do
+    before(:all) { @import_forwarding_url = @job.post_job(:importer, :neptune, iev_file: ENV['IEV_IMPORT_FILE_TEST'], iev_params: ENV['IEV_IMPORT_NEPTUNE_PARAMS_TEST']) }
+    it 'return invalid format in forwarding_url' do
+      expect(@import_forwarding_url['error_code']).to eq('INVALID_FORMAT')
+    end
+  end
+
   context '#import' do
     before(:all) { @import_forwarding_url = @job.post_job(:importer, :gtfs, iev_file: ENV['IEV_IMPORT_FILE_TEST'], iev_params: ENV['IEV_IMPORT_PARAMS_TEST']) }
     it 'return correct url suffix' do
