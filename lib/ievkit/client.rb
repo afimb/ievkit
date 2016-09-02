@@ -1,11 +1,13 @@
 module Ievkit
   class Client
-    attr_reader :iev_url_prefix, :iev_url_suffix, :iev_url_jobs, :referential, :redis
+    attr_reader :iev_url_prefix, :iev_url_prefix_admin, :iev_url_list_tests, :iev_url_suffix, :iev_url_jobs, :referential, :redis
 
     def initialize(referential)
       @payload = {}
       @referential = referential
       @iev_url_prefix = init_iev_url_prefix
+      @iev_url_prefix_admin = init_iev_url_prefix_admin
+      @iev_url_list_tests = init_iev_url_list_tests
       @iev_url_jobs = init_iev_url_jobs
       @redis = Redis.new
     end
@@ -71,6 +73,29 @@ module Ievkit
       @payload[:file[1]] = Faraday::UploadIO.new(iev_file, 'application/zip', filename)
     end
 
+    def get_stats
+      @payload = { key: ENV['iev_admin_key'] }
+      init_connection(@iev_url_prefix_admin)
+      begin
+        response = @connection.get('get_monthly_stats', @payload)
+        parse_response(response)
+      rescue => e
+        Ievkit::Log.logger.fatal("Unable to contact IEV server: #{e.message}")
+        return false
+      end
+    end
+
+    def list_tests(action, format)
+      init_connection(@iev_url_list_tests)
+      begin
+        response = @connection.get("#{action}/#{format}", @payload)
+        parse_response(response)
+      rescue => e
+        Ievkit::Log.logger.fatal("Unable to contact IEV server: #{e.message}")
+        return false
+      end
+    end
+
     protected
 
     def headers
@@ -114,6 +139,25 @@ module Ievkit
         ENV['IEV_PATH'],
         'referentials',
         @referential,
+        ''
+      ].compact * '/'
+    end
+
+    def init_iev_url_prefix_admin
+      [
+        "#{ENV['IEV_HOST']}:#{ENV['IEV_PORT']}",
+        ENV['IEV_PATH'],
+        'admin',
+        ''
+      ].compact * '/'
+    end
+
+    def init_iev_url_list_tests
+      [
+        "#{ENV['IEV_HOST']}:#{ENV['IEV_PORT']}",
+        ENV['IEV_PATH'],
+        'admin',
+        'test_list',
         ''
       ].compact * '/'
     end

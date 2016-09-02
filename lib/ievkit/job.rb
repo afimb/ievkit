@@ -26,6 +26,14 @@ module Ievkit
       get_job(url).to_s.include?('terminated_jobs')
     end
 
+    def get_stats
+      @client.get_stats
+    end
+
+    def list_tests(action, format)
+      @client.list_tests(action, format)
+    end
+
     protected
 
     def do_job(url, http_method)
