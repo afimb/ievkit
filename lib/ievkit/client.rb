@@ -25,28 +25,34 @@ module Ievkit
       end
     end
 
-    def prepare_request(url, http_method)
-      cache_key = [url, http_method.to_s].join('_')
-      begin
-        response_cached = @redis.cache(cache_key)
-        return response_cached if response_cached
-      rescue => e
-        Ievkit::Log.logger.fatal("Unable to contact Redis server: #{e.message}")
+    def prepare_request(url, http_method, disable_cache = false)
+      unless disable_cache
+        cache_key = [url, http_method.to_s].join('_')
+        begin
+          response_cached = @redis.cache(cache_key)
+          return response_cached if response_cached
+        rescue => e
+          Ievkit::Log.logger.fatal("Unable to contact Redis server: #{e.message}")
+        end
       end
       init_connection(url)
       begin
         response = @connection.send(http_method)
-        cache_control = response.headers['cache-control']
-        max_age = 0
-        no_cache = true
-        if cache_control
-          max_age = cache_control[/max-age=(.*)/, 1].to_i
-          no_cache = false if max_age > 0 && cache_control[/no-transform/]
+        unless disable_cache
+          cache_control = response.headers['cache-control']
+          max_age = 0
+          no_cache = true
+          if cache_control
+            max_age = cache_control[/max-age=(.*)/, 1].to_i
+            no_cache = false if max_age > 0 && cache_control[/no-transform/]
+          end
+          return parse_response(response) if no_cache
+          @redis.cache(cache_key, max_age) {
+            parse_response(response)
+          }
+        else
+          return parse_response(response)
         end
-        return parse_response(response) if no_cache
-        @redis.cache(cache_key, max_age) {
-          parse_response(response)
-        }
       rescue => e
         Ievkit::Log.logger.fatal("Unable to contact IEV server: #{e.message}")
         return false

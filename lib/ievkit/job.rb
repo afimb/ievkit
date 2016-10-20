@@ -1,6 +1,7 @@
 module Ievkit
   class Job
     attr_reader :client, :response
+    attr_accessor :disable_cache
 
     def initialize(referential_id)
       @client = Ievkit::Client.new(referential_id)
@@ -37,7 +38,7 @@ module Ievkit
     protected
 
     def do_job(url, http_method)
-      @client.prepare_request(url, http_method)
+      @client.prepare_request(url, http_method, @disable_cache)
     end
 
     def importer(type, options)
