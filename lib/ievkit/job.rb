@@ -35,6 +35,31 @@ module Ievkit
       @client.list_tests(action, format)
     end
 
+    def download_validation_report(data, errors)
+      csv = []
+      csv << "\uFEFF;Statut/Information;Nombre d'erreurs;Nombre d'avertissements"
+      data.each do |el|
+        t = [el[:name], I18n.t("compliance_check_results.severities.#{el[:status]}"), el[:count_error], el[:count_warning]]
+        csv << t.join(';')
+        next unless el[:check_point_errors]
+        el[:check_point_errors].each do |index|
+          error = errors[index]
+          next unless error
+          t = []
+          esf = error[:source][:file]
+          if esf && esf[:filename]
+            filename = []
+            filename << "#{I18n.t('report.file.line')} #{esf[:line_number]}" if esf[:line_number].to_i > 0
+            filename << "#{I18n.t('report.file.column')} #{esf[:column_number]}" if esf[:column_number].to_i > 0
+            t << filename.join(' ') if filename.present?
+          end
+          t << error[:error_name]
+          csv << ';'+t.join(' ')
+        end
+      end
+      csv.join("\n")
+    end
+
     protected
 
     def do_job(url, http_method)
