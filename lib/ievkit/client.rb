@@ -9,6 +9,7 @@ module Ievkit
       @iev_url_prefix_admin = init_iev_url_prefix_admin
       @iev_url_list_tests = init_iev_url_list_tests
       @iev_url_jobs = init_iev_url_jobs
+      @iev_disable_cache = init_iev_disable_cache
       @redis = Redis.new
     end
 
@@ -25,8 +26,8 @@ module Ievkit
       end
     end
 
-    def prepare_request(url, http_method, disable_cache = false)
-      unless disable_cache
+    def prepare_request(url, http_method)
+      unless @iev_disable_cache
         cache_key = [url, http_method.to_s].join('_')
         begin
           response_cached = @redis.cache(cache_key)
@@ -38,7 +39,7 @@ module Ievkit
       init_connection(url)
       begin
         response = @connection.send(http_method)
-        unless disable_cache
+        unless @iev_disable_cache
           cache_control = response.headers['cache-control']
           max_age = 0
           no_cache = true
@@ -182,6 +183,10 @@ module Ievkit
     def init_iev_version
       raise 'You need to set the environment variable IEV_VERSION.' unless ENV['IEV_VERSION']
       { 'Accept-Version': ENV['IEV_VERSION'] }
+    end
+
+    def init_iev_disable_cache
+      ENV['IEV_DISABLE_CACHE'] == 'true'
     end
   end
 end
