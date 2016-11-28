@@ -180,6 +180,7 @@ module Ievkit
     end
 
     def init_iev_version
+      raise 'You need to set the environment variable IEV_VERSION.' unless ENV['IEV_VERSION']
       { 'Accept-Version': ENV['IEV_VERSION'] }
     end
   end
