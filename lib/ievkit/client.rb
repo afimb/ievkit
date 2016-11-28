@@ -180,7 +180,7 @@ module Ievkit
     end
 
     def init_iev_version
-      { 'Accept-Version': ENV['IEV_VERSION'] }
+      { 'Accept-Version': ENV['IEV_VERSION'] ? ENV['IEV_VERSION'] : "" }
     end
   end
 end
