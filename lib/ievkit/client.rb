@@ -26,8 +26,8 @@ module Ievkit
       end
     end
 
-    def prepare_request(url, http_method)
-      unless @iev_disable_cache
+    def prepare_request(url, http_method, disable_cache = false)
+      unless @iev_disable_cache || disable_cache
         cache_key = [url, http_method.to_s].join('_')
         begin
           response_cached = @redis.cache(cache_key)
