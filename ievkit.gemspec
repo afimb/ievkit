@@ -28,7 +28,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_dependency 'figaro', '~> 1.1.1'
-  spec.add_dependency 'faraday_middleware', '~> 0.10.0'
+  spec.add_dependency 'faraday_middleware', '~> 0.11.0.1'
   spec.add_dependency 'rest-client', '~> 1.8.0'
   spec.add_dependency  'redis', '~>3.2'
 
