@@ -21,6 +21,7 @@ module Ievkit
         parse_response(response)
       rescue => e
         Ievkit::Log.logger.fatal("Unable to contact IEV server: #{e.message}")
+        trigger_to_compliation_error
         return false
       end
     end
@@ -33,6 +34,7 @@ module Ievkit
           return response_cached if response_cached
         rescue => e
           Ievkit::Log.logger.fatal("Unable to contact Redis server: #{e.message}")
+          trigger_to_compliation_error
         end
       end
       init_connection(url)
@@ -55,6 +57,7 @@ module Ievkit
         end
       rescue => e
         Ievkit::Log.logger.fatal("Unable to contact IEV server: #{e.message}")
+        trigger_to_compliation_error
         return false
       end
     end
@@ -87,6 +90,7 @@ module Ievkit
         parse_response(response)
       rescue => e
         Ievkit::Log.logger.fatal("Unable to contact IEV server: #{e.message}")
+        trigger_to_compliation_error
         return false
       end
     end
@@ -98,6 +102,7 @@ module Ievkit
         parse_response(response)
       rescue => e
         Ievkit::Log.logger.fatal("Unable to contact IEV server: #{e.message}")
+        trigger_to_compliation_error
         return false
       end
     end
