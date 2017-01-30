@@ -20,7 +20,10 @@ module Ievkit
         response = @connection.post(@iev_url_suffix, @payload)
         parse_response(response)
       rescue => e
-        Ievkit::Log.logger.fatal("Unable to contact IEV server: #{e.message}")
+        Ievkit::Log.logger.fatal("Unable to contact IEV server on prepare_post_request: #{e.message}")
+        puts 'exception #{e}'
+        puts "connection #{@connection}"
+        puts "env #{ENV}"
         trigger_to_compliation_error
         return false
       end
@@ -34,6 +37,9 @@ module Ievkit
           return response_cached if response_cached
         rescue => e
           Ievkit::Log.logger.fatal("Unable to contact Redis server: #{e.message}")
+          puts 'exception #{e}'
+          puts "connection #{@connection}"
+          puts "env #{ENV}"
           trigger_to_compliation_error
         end
       end
@@ -56,7 +62,10 @@ module Ievkit
           return parse_response(response)
         end
       rescue => e
-        Ievkit::Log.logger.fatal("Unable to contact IEV server: #{e.message}")
+        Ievkit::Log.logger.fatal("Unable to contact IEV server on prepare_request: #{e.message}")
+        puts 'exception #{e}'
+        puts "connection #{@connection}"
+        puts "env #{ENV}"
         trigger_to_compliation_error
         return false
       end
@@ -67,6 +76,7 @@ module Ievkit
         conn.request :multipart if @payload.any?
         conn.headers = headers
         conn.response :json, content_type: 'application/json'
+        conn.options.timeout = 120
         conn.adapter Faraday.default_adapter
       end
     end
@@ -101,7 +111,10 @@ module Ievkit
         response = @connection.get("#{action}/#{format}", @payload)
         parse_response(response)
       rescue => e
-        Ievkit::Log.logger.fatal("Unable to contact IEV server: #{e.message}")
+        Ievkit::Log.logger.fatal("Unable to contact IEV server on list_tests: #{e.message}")
+        puts 'exception #{e}'
+        puts "connection #{@connection}"
+        puts "env #{ENV}"
         trigger_to_compliation_error
         return false
       end
