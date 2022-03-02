@@ -27,8 +27,8 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'figaro', '~> 1.1.1'
-  spec.add_dependency 'faraday_middleware', '~> 0.11.0.1'
+  spec.add_dependency 'figaro', '~> 1.2.0'
+  spec.add_dependency 'faraday_middleware', '~> 0.14.0'
   spec.add_dependency 'rest-client', '~> 1.8.0'
   spec.add_dependency  'redis', '~>3.2'
 
